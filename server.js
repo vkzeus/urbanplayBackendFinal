@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const cors = require("cors");  // Import cors
 const userRoutes = require("./userRoutes");
-const User = require("../backend/models/user.js");
+const User = require("./models/user.js");
 const booked=require("./models/bookings.js");
 
 
