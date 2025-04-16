@@ -10,16 +10,13 @@ const booked=require("./models/bookings.js");
 
 dotenv.config();
 const app = express();
+app.use(express.json());
 const port = process.env.PORT || 3001;
 
 // Enable CORS
-app.use(cors({
-  origin: 'http://localhost:3000', // Allow requests only from your frontend
-  methods: ['GET', 'POST'], // Allow only GET and POST methods
-  allowedHeaders: ['Content-Type'], // Allow only specific headers
-}));
+app.use(cors());
 
-app.use(express.json());
+
 
 mongoose.connect(process.env.MONGODB_URI)
 .then(() => console.log("Connected to MongoDB"))
@@ -83,24 +80,49 @@ app.post("/register", async (req, res) => {
     }
   });
 app.post("/turfs", async (req, res) => {
-  const { turfName, rate } = req.body;
+  const { turfName, rate, user } = req.body;
 
   try {
-    // Create a new booking (or save to DB depending on your schema)
     const newBooking = new booked({
       turfName,
       rate,
-      bookedAt: new Date(), // Optional: timestamp
+      user, 
     });
-
+    
     await newBooking.save();
-
     res.status(201).json({ message: "Turf booked successfully", booking: newBooking });
-    console.log(`Turf booked: ${turfName} at ₹${rate}/hr`);
+    console.log(`Turf booked: ${turfName} at ₹${rate}/hr ${user}`);
   } catch (error) {
     res.status(500).json({ error: "Booking failed", details: error.message });
   }
 });
+
+
+
+
+app.get("/bookings", async (req, res) => {
+  try {
+    const userName = req.headers.user; 
+    
+
+    if (!userName) {
+      return res.status(400).json({ error: "User header missing" });
+    }
+
+    
+
+
+    // Now use user's _id to fetch bookings
+    const bookings = await booked.find({ user : userName });
+    res.status(200).json(bookings);
+  } catch (error) {
+    console.error("Error fetching bookings:", error);
+    res.status(500).json({ error: "Failed to fetch bookings" });
+  }
+});
+
+
+
 
 
 app.listen(port, () => {
