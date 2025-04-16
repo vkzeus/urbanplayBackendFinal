@@ -43,42 +43,42 @@ app.post("/login", async (req, res) => {
   }
 });
 app.post("/register", async (req, res) => {
-    const { username, password } = req.body;
-  
-    // Simple validation (check if username and password are provided)
-    if (!username || !password) {
-      return res.status(400).json({ error: "Username and password are required" });
-    }
-  
-    try {
-      // Check if the username already exists
-      const existingUser = await User.findOne({ username });
-  
-      if (existingUser) {
-        return res.status(400).json({ error: "Username is already taken" });
-      }
-  
-      // Create a new user (without password hashing)
-      const newUser = new User({
-        username,
-        password,  // Save the password as it is (plaintext, not recommended for production)
-      });
-  
-      // Save the user to the database
-      await newUser.save();
-  
-      // Return a success message with the user data (excluding password)
-      res.status(201).json({
-        message: "User registered successfully",
-        user: { username: newUser.username, _id: newUser._id },
+  const { username, password } = req.body;
 
-      });
-      console.log(`New user Registered Successfully`,newUser)
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: "Registration failed", details: error.message });
+  // Simple validation (check if username and password are provided)
+  if (!username || !password) {
+    return res.status(400).json({ error: "Username and password are required" });
+  }
+
+  try {
+    // Check if the username already exists
+    const existingUser = await User.findOne({ username });
+
+    if (existingUser) {
+      return res.status(400).json({ error: "Username is already taken" });
     }
-  });
+
+    // Create a new user (without password hashing)
+    const newUser = new User({
+      username,
+      password,  // Save the password as it is (plaintext, not recommended for production)
+    });
+
+    // Save the user to the database
+    await newUser.save();
+
+    // Return a success message with the user data (excluding password)
+    res.status(201).json({
+      message: "User registered successfully",
+      user: { username: newUser.username, _id: newUser._id },
+
+    });
+    console.log(`New user Registered Successfully`,newUser)
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Registration failed", details: error.message });
+  }
+});
 app.post("/turfs", async (req, res) => {
   const { turfName, rate, user } = req.body;
 
