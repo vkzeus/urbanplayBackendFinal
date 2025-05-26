@@ -13,7 +13,7 @@ const app = express();
 app.use(express.json());
 const port = process.env.PORT || 3001;
 
-// Enable CORS
+
 app.use(cors());
 
 
@@ -45,29 +45,29 @@ app.post("/login", async (req, res) => {
 app.post("/register", async (req, res) => {
   const { username, password } = req.body;
 
-  // Simple validation (check if username and password are provided)
+
   if (!username || !password) {
     return res.status(400).json({ error: "Username and password are required" });
   }
 
   try {
-    // Check if the username already exists
+ 
     const existingUser = await User.findOne({ username });
 
     if (existingUser) {
       return res.status(400).json({ error: "Username is already taken" });
     }
 
-    // Create a new user (without password hashing)
+   
     const newUser = new User({
       username,
       password,  // Save the password as it is (plaintext, not recommended for production)
     });
 
-    // Save the user to the database
+   
     await newUser.save();
 
-    // Return a success message with the user data (excluding password)
+  
     res.status(201).json({
       message: "User registered successfully",
       user: { username: newUser.username, _id: newUser._id },
@@ -112,7 +112,7 @@ app.get("/bookings", async (req, res) => {
     
 
 
-    // Now use user's _id to fetch bookings
+    
     const bookings = await booked.find({ user : userName });
     res.status(200).json(bookings);
   } catch (error) {
